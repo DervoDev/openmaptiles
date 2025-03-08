@@ -181,6 +181,7 @@ CREATE TABLE simplify_vw_z9 AS
              0.001)) AS geometry
     FROM simplify_vw_z10
     WHERE ST_Area(geometry) > power(zres(8),2)
+    GROUP BY subclass
 );
 CREATE INDEX ON simplify_vw_z9 USING GIST (geometry);
 

@@ -177,11 +177,10 @@ CREATE TABLE simplify_vw_z9 AS
     SELECT subclass,
            ST_MakeValid(
             ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(9),2)),
+             ST_SimplifyVW(geometry, power(zres(9),2)),
              0.001)) AS geometry
     FROM simplify_vw_z10
     WHERE ST_Area(geometry) > power(zres(8),2)
-    GROUP BY subclass
 );
 CREATE INDEX ON simplify_vw_z9 USING GIST (geometry);
 

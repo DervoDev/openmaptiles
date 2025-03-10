@@ -59,8 +59,8 @@ CREATE TABLE osm_landcover_gen_z13 AS
     WHERE (ST_NPoints(geometry) >= 300 AND subclass IN ('wood', 'forest'))
        OR (subclass NOT IN ('wood', 'forest'))
     );
-
 CREATE INDEX ON osm_landcover_gen_z13 USING GIST (geometry);
+
 
 
 -- etldoc: simplify_vw_z13 ->  simplify_vw_z12
@@ -95,8 +95,8 @@ CREATE TABLE osm_landcover_gen_z12 AS
     WHERE (ST_NPoints(geometry) >= 300  AND subclass IN ('wood', 'forest'))
        OR (subclass NOT IN ('wood', 'forest'))
     );
-
 CREATE INDEX ON osm_landcover_gen_z12 USING GIST (geometry);
+
 
 
 -- etldoc: simplify_vw_z12 ->  simplify_vw_z11
@@ -131,8 +131,8 @@ CREATE TABLE osm_landcover_gen_z11 AS
     WHERE (ST_NPoints(geometry) >= 300 AND subclass IN ('wood', 'forest'))
        OR (subclass NOT IN ('wood', 'forest'))
     );
-
 CREATE INDEX ON osm_landcover_gen_z11 USING GIST (geometry);
+
 
 
 -- etldoc: simplify_vw_z11 ->  simplify_vw_z10
@@ -167,7 +167,6 @@ CREATE TABLE osm_landcover_gen_z10 AS
     WHERE (ST_NPoints(geometry) >= 300 AND subclass IN ('wood', 'forest'))
        OR (subclass NOT IN ('wood', 'forest'))
     );
-
 CREATE INDEX ON osm_landcover_gen_z10 USING GIST (geometry);
 
 
@@ -215,7 +214,6 @@ CREATE TABLE osm_landcover_gen_z9 AS
     FROM simplify_vw_z9
     WHERE subclass NOT IN ('wood', 'forest')
     );
-
 CREATE INDEX ON osm_landcover_gen_z9 USING GIST (geometry);
 
 
@@ -278,7 +276,7 @@ CREATE TABLE osm_landcover_gen_z7 AS
 SELECT subclass,
        ST_MakeValid(
         (ST_Dump(
-         ST_Union(geometry))).geom) AS geometry
+         ST_Union(geometry,0.00000001))).geom) AS geometry
     FROM
         (
         SELECT  subclass,

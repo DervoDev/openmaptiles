@@ -226,9 +226,9 @@ CREATE TABLE simplify_vw_z8 AS
            ST_MakeValid(
             ST_SnapToGrid(
              ST_SimplifyVW(
-                ST_Buffer(
-                    (ST_dump(ST_Union(geometry))).geom,0.001,1), power(zres(8),2)),
-             0.001)) AS geometry
+                ST_MakeValid(ST_Buffer(geometry,0.001,1)), 
+                    power(zres(8),2)),
+             0.001),'method=structure') AS geometry
     FROM simplify_vw_z9
     WHERE ST_Area(geometry) > power(zres(7),2)
     GROUP BY subclass

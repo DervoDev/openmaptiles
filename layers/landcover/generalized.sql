@@ -177,11 +177,14 @@ CREATE TABLE simplify_vw_z9 AS
     SELECT subclass,
            ST_MakeValid(
             ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(9),2)),
+             ST_SimplifyVW(ST_Union(ST_Buffer(geometry,0.0001,1)), power(zres(9),2)),
              0.001)) AS geometry
-    FROM simplify_vw_z10
+    FROM (
+        SELECT subclass, ST_ClusterDBSCAN(geometry, eps :=0.1, minpoints := 1) over () AS cid, geometry
+        FROM simplify_vw_z10
+    )
     WHERE ST_Area(geometry) > power(zres(8),2)
-    GROUP BY subclass
+    GROUP BY subclass, cid
 );
 CREATE INDEX ON simplify_vw_z9 USING GIST (geometry);
 
@@ -226,25 +229,23 @@ CREATE TABLE simplify_vw_z8 AS
     SELECT subclass,
            ST_MakeValid(
             ST_SnapToGrid(
-             ST_SimplifyVW(ST_Buffer(geometry,0.001,1), power(zres(8),2)),
-             0.001)) AS geometry
-    FROM simplify_vw_z9
+             ST_SimplifyVW((ST_dump(ST_Union(geometry))).geom), power(zres(8),2)),
+             0.001) AS geometry
+    FROM (
+        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0.2, minpoints := 1) over () AS cid, geometry
+        FROM simplify_vw_z9
+    )
     WHERE ST_Area(geometry) > power(zres(7),2)
+    GROUP BY subclass, cid
     );
 CREATE INDEX ON simplify_vw_z8 USING GIST (geometry);
 
 -- etldoc: simplify_vw_z8 ->  osm_landcover_gen_z8
 CREATE TABLE osm_landcover_gen_z8 AS
 (
-SELECT subclass,
-       ST_MakeValid(
-        (ST_Dump(
-         ST_Union(geometry))).geom) AS geometry
-    FROM
-        (
-        SELECT subclass,
-               ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) OVER () AS cid,
-               geometry
+SELECT subclass, ST_MakeValid((ST_Dump(ST_Union(geometry))).geom) AS geometry
+    FROM (
+        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) OVER () AS cid, geometry
         FROM simplify_vw_z8
         WHERE subclass IN ('wood', 'forest')
         ) union_geom

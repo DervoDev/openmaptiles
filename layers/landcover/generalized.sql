@@ -182,13 +182,6 @@ CREATE TABLE simplify_vw_z9 AS
     FROM simplify_vw_z10
     WHERE ST_Area(geometry) > power(zres(8),2)
 );
-ALTER TABLE simplify_vw_z9
-    ALTER COLUMN geometry
-    SET STORAGE EXTERNAL;
-UPDATE simplify_vw_z9
-  SET geometry = ST_SetSRID(geometry, 4326);
-
-
 CREATE INDEX ON simplify_vw_z9 USING GIST (geometry);
 
 -- etldoc: simplify_vw_z9 ->  osm_landcover_gen_z9

@@ -229,8 +229,10 @@ CREATE TABLE simplify_vw_z8 AS
     SELECT subclass,
            ST_MakeValid(
             ST_SnapToGrid(
-             ST_SimplifyVW((ST_dump(ST_Union(geometry))).geom), power(zres(8),2)),
-             0.001) AS geometry
+                ST_SimplifyVW(
+                    (ST_dump(ST_Union(geometry))).geom, 
+                    power(zres(8),2)),
+                0.001)) AS geometry
     FROM (
         SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0.2, minpoints := 1) over () AS cid, geometry
         FROM simplify_vw_z9

@@ -182,7 +182,7 @@ CREATE TABLE simplify_vw_z9 AS
     FROM (
         SELECT subclass, ST_ClusterDBSCAN(geometry, eps :=0.1, minpoints := 1) over () AS cid, geometry
         FROM simplify_vw_z10
-    )
+    ) cluster_geom
     WHERE ST_Area(geometry) > power(zres(8),2)
     GROUP BY subclass, cid
 );
@@ -234,7 +234,7 @@ CREATE TABLE simplify_vw_z8 AS
     FROM (
         SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0.2, minpoints := 1) over () AS cid, geometry
         FROM simplify_vw_z9
-    )
+    ) cluster_geom
     WHERE ST_Area(geometry) > power(zres(7),2)
     GROUP BY subclass, cid
     );

@@ -171,7 +171,7 @@ CREATE TABLE osm_landcover_gen_z10 AS
     FROM simplify_vw_z10
     WHERE (ST_NPoints(geometry) >= 300 AND subclass IN ('wood', 'forest'))
        OR (subclass NOT IN ('wood', 'forest'))
-    );
+);
 
 CREATE INDEX ON osm_landcover_gen_z10 USING GIST (geometry);
 
@@ -183,14 +183,20 @@ CREATE TABLE simplify_vw_z9 AS
     SELECT subclass,
            ST_MakeValid(
             ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(ST_Buffer(geometry,0.0001,1)), power(zres(9),2)),
+             ST_SimplifyVW(ST_Buffer(ST_Union(ST_Buffer(geometry,10,1)),-10,1), power(zres(9),2)),
              0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps :=0.1, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z10
-    ) cluster_geom
-    WHERE ST_Area(geometry) > power(zres(8),2)
-    GROUP BY subclass, cid
+    FROM simplify_vw_z10
+    WHERE ST_Area(geometry) > power(zres(8),2) AND subclass IN ('wood', 'forest')
+    GROUP BY subclass
+    UNION ALL 
+    SELECT subclass,
+           ST_MakeValid(
+            ST_SnapToGrid(
+             ST_SimplifyVW(ST_Union(geometry), power(zres(9),2)),
+             0.001)) AS geometry
+    FROM simplify_vw_z10
+    WHERE ST_Area(geometry) > power(zres(8),2) AND subclass NOT IN ('wood', 'forest')
+    GROUP BY subclass
 );
 CREATE INDEX ON simplify_vw_z9 USING GIST (geometry);
 
@@ -234,16 +240,9 @@ PRINT Gen layer 8;
 CREATE TABLE simplify_vw_z8 AS
 (
     SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-                ST_SimplifyVW(ST_Union(geometry), power(zres(8),2)),
-                0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0.2, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z9
-    ) cluster_geom
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(8),2)),0.001)) AS geometry
+    FROM simplify_vw_z9
     WHERE ST_Area(geometry) > power(zres(7),2)
-    GROUP BY subclass, cid
     );
 CREATE INDEX ON simplify_vw_z8 USING GIST (geometry);
 
@@ -273,16 +272,9 @@ PRINT Gen layer 7;
 CREATE TABLE simplify_vw_z7 AS
 (
     SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(ST_Buffer(geometry,0.0004,1)), power(zres(7),2)),
-             0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0.2, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z8
-    ) cluster_geom
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(7),2)),0.001)) AS geometry
+    FROM simplify_vw_z8
     WHERE ST_Area(geometry) > power(zres(6),2)
-    GROUP BY subclass, cid
 );
 CREATE INDEX ON simplify_vw_z7 USING GIST (geometry);
 
@@ -312,16 +304,9 @@ PRINT Gen layer 6;
 CREATE TABLE simplify_vw_z6 AS
 (
     SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(6),2)),
-             0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0.4, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z7
-    ) cluster_geom
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(6),2)),0.001)) AS geometry
+    FROM simplify_vw_z7
     WHERE ST_Area(geometry) > power(zres(5),2)
-    GROUP BY subclass, cid
 );
 CREATE INDEX ON simplify_vw_z6 USING GIST (geometry);
 
@@ -351,16 +336,9 @@ PRINT Gen layer 5;
 CREATE TABLE simplify_vw_z5 AS
 (
     SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(5),2)),
-             0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0.6, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z6
-    ) cluster_geom
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(5),2)),0.001)) AS geometry
+    FROM simplify_vw_z6
     WHERE ST_Area(geometry) > power(zres(4),2)
-    GROUP BY subclass, cid
 );
 CREATE INDEX ON simplify_vw_z5 USING GIST (geometry);
 
@@ -390,16 +368,9 @@ PRINT Gen layer 4;
 CREATE TABLE simplify_vw_z4 AS
 (
     SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(4),2)),
-             0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0.8, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z5
-    ) cluster_geom
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(4),2)),0.001)) AS geometry
+    FROM simplify_vw_z5
     WHERE ST_Area(geometry) > power(zres(3),2)
-    GROUP BY subclass, cid
 );
 CREATE INDEX ON simplify_vw_z4 USING GIST (geometry);
 
@@ -429,16 +400,9 @@ PRINT Gen layer 3;
 CREATE TABLE simplify_vw_z3 AS
 (
     SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(3),2)),
-             0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 1.0, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z4
-    ) cluster_geom
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(3),2)),0.001)) AS geometry
+    FROM simplify_vw_z4
     WHERE ST_Area(geometry) > power(zres(2),2)
-    GROUP BY subclass, cid
 );
 CREATE INDEX ON simplify_vw_z3 USING GIST (geometry);
 
@@ -468,16 +432,9 @@ PRINT Gen layer 2;
 CREATE TABLE simplify_vw_z2 AS
 (
     SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(2),2)),
-             0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 1.2, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z3
-    ) cluster_geom
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(2),2)),0.001)) AS geometry
+    FROM simplify_vw_z3
     WHERE ST_Area(geometry) > power(zres(1),2)
-    GROUP BY subclass, cid
 );
 CREATE INDEX ON simplify_vw_z2 USING GIST (geometry);
 
@@ -507,14 +464,8 @@ PRINT Gen layer 1;
 CREATE TABLE simplify_vw_z1 AS
 (
     SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(1),2)),
-             0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 1.4, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z2
-    ) cluster_geom
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(1),2)),0.001)) AS geometry
+    FROM simplify_vw_z2
     WHERE ST_Area(geometry) > power(zres(0),2)
     GROUP BY subclass, cid
 );
@@ -546,14 +497,8 @@ PRINT Gen layer 0;
 CREATE TABLE simplify_vw_z0 AS
 (
     SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(0),2)),
-             0.001)) AS geometry
-    FROM (
-        SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 1.6, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z1
-    ) cluster_geom
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(0),2)),0.001)) AS geometry
+    FROM simplify_vw_z1
     GROUP BY subclass, cid
 );
 CREATE INDEX ON simplify_vw_z0 USING GIST (geometry);

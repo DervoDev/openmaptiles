@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS simplify_vw_z11 CASCADE;
 DROP TABLE IF EXISTS simplify_vw_z12 CASCADE;
 DROP TABLE IF EXISTS simplify_vw_z13 CASCADE;
 
-PRINT N'Gen layer 13';
+PRINT 'Gen layer 13';
 
 -- etldoc: osm_landcover_polygon ->  simplify_vw_z13
 CREATE TABLE simplify_vw_z13 AS
@@ -64,7 +64,7 @@ CREATE TABLE osm_landcover_gen_z13 AS
 
 CREATE INDEX ON osm_landcover_gen_z13 USING GIST (geometry);
 
-PRINT N'Gen layer 12';
+PRINT 'Gen layer 12';
 
 -- etldoc: simplify_vw_z13 ->  simplify_vw_z12
 CREATE TABLE simplify_vw_z12 AS
@@ -101,7 +101,7 @@ CREATE TABLE osm_landcover_gen_z12 AS
 
 CREATE INDEX ON osm_landcover_gen_z12 USING GIST (geometry);
 
-PRINT N'Gen layer 11'; 
+PRINT 'Gen layer 11'; 
 
 -- etldoc: simplify_vw_z12 ->  simplify_vw_z11
 CREATE TABLE simplify_vw_z11 AS
@@ -138,7 +138,7 @@ CREATE TABLE osm_landcover_gen_z11 AS
 
 CREATE INDEX ON osm_landcover_gen_z11 USING GIST (geometry);
 
-PRINT N'Gen layer 10';
+PRINT 'Gen layer 10';
 
 -- etldoc: simplify_vw_z11 ->  simplify_vw_z10
 CREATE TABLE simplify_vw_z10 AS
@@ -175,7 +175,7 @@ CREATE TABLE osm_landcover_gen_z10 AS
 
 CREATE INDEX ON osm_landcover_gen_z10 USING GIST (geometry);
 
-PRINT N'Gen layer 9';
+PRINT 'Gen layer 9';
 
 -- etldoc: simplify_vw_z10 ->  simplify_vw_z9
 CREATE TABLE simplify_vw_z9 AS
@@ -234,7 +234,7 @@ CREATE TABLE osm_landcover_gen_z9 AS
 
 CREATE INDEX ON osm_landcover_gen_z9 USING GIST (geometry);
 
-PRINT N'Gen layer 8';
+PRINT 'Gen layer 8';
 
 -- etldoc: simplify_vw_z9 ->  simplify_vw_z8
 CREATE TABLE simplify_vw_z8 AS
@@ -266,7 +266,7 @@ SELECT subclass, ST_MakeValid((ST_Dump(ST_Union(geometry))).geom) AS geometry
 
 CREATE INDEX ON osm_landcover_gen_z8 USING GIST (geometry);
 
-PRINT N'Gen layer 7';
+PRINT 'Gen layer 7';
 
 -- etldoc: simplify_vw_z8 ->  simplify_vw_z7
 CREATE TABLE simplify_vw_z7 AS
@@ -298,7 +298,7 @@ SELECT subclass,
 
 CREATE INDEX ON osm_landcover_gen_z7 USING GIST (geometry);
 
-PRINT N'Gen layer 6';
+PRINT 'Gen layer 6';
 
 -- etldoc: simplify_vw_z7 ->  simplify_vw_z6
 CREATE TABLE simplify_vw_z6 AS
@@ -330,7 +330,7 @@ SELECT subclass,
 
 CREATE INDEX ON osm_landcover_gen_z6 USING GIST (geometry);
 
-PRINT N'Gen layer 5';
+PRINT 'Gen layer 5';
 
 -- etldoc: simplify_vw_z6 ->  simplify_vw_z5
 CREATE TABLE simplify_vw_z5 AS
@@ -362,7 +362,7 @@ CREATE TABLE osm_landcover_gen_z5 AS
 
 CREATE INDEX ON osm_landcover_gen_z5 USING GIST (geometry);
 
-PRINT N'Gen layer 4';
+PRINT 'Gen layer 4';
 
 -- etldoc: simplify_vw_z5 ->  simplify_vw_z4
 CREATE TABLE simplify_vw_z4 AS
@@ -394,7 +394,7 @@ CREATE TABLE osm_landcover_gen_z4 AS
 
 CREATE INDEX ON osm_landcover_gen_z4 USING GIST (geometry);
 
-PRINT N'Gen layer 3';
+PRINT 'Gen layer 3';
 
 -- etldoc: simplify_vw_z4 ->  simplify_vw_z3
 CREATE TABLE simplify_vw_z3 AS
@@ -426,7 +426,7 @@ CREATE TABLE osm_landcover_gen_z3 AS
 
 CREATE INDEX ON osm_landcover_gen_z3 USING GIST (geometry);
 
-PRINT N'Gen layer 2';
+PRINT 'Gen layer 2';
 
 -- etldoc: simplify_vw_z3 ->  simplify_vw_z2
 CREATE TABLE simplify_vw_z2 AS
@@ -458,7 +458,7 @@ CREATE TABLE osm_landcover_gen_z2 AS
 
 CREATE INDEX ON osm_landcover_gen_z2 USING GIST (geometry);
 
-PRINT N'Gen layer 1';
+PRINT 'Gen layer 1';
 
 -- etldoc: simplify_vw_z2 ->  simplify_vw_z1
 CREATE TABLE simplify_vw_z1 AS
@@ -491,7 +491,7 @@ CREATE TABLE osm_landcover_gen_z1 AS
 
 CREATE INDEX ON osm_landcover_gen_z1 USING GIST (geometry);
 
-PRINT N'Gen layer 0';
+PRINT 'Gen layer 0';
 
 -- etldoc: simplify_vw_z1 ->  simplify_vw_z0
 CREATE TABLE simplify_vw_z0 AS

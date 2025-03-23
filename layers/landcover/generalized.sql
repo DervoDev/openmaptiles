@@ -183,20 +183,10 @@ CREATE TABLE simplify_vw_z9 AS
     SELECT subclass,
            ST_MakeValid(
             ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(9),2)),
+             ST_SimplifyVW(geometry, power(zres(9),2)),
              0.001)) AS geometry
     FROM simplify_vw_z10
-    WHERE ST_Area(geometry) > power(zres(8),2) AND subclass IN ('wood', 'forest')
-    GROUP BY subclass
-    UNION ALL 
-    SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(9),2)),
-             0.001)) AS geometry
-    FROM simplify_vw_z10
-    WHERE ST_Area(geometry) > power(zres(8),2) AND subclass NOT IN ('wood', 'forest')
-    GROUP BY subclass
+    WHERE ST_Area(geometry) > power(zres(8),2)
 );
 CREATE INDEX ON simplify_vw_z9 USING GIST (geometry);
 
@@ -304,9 +294,22 @@ CREATE INDEX ON osm_landcover_gen_z7 USING GIST (geometry);
 CREATE TABLE simplify_vw_z6 AS
 (
     SELECT subclass,
-           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(6),2)),0.001)) AS geometry
+           ST_MakeValid(
+            ST_SnapToGrid(
+             ST_SimplifyVW(ST_Union(geometry), power(zres(6),2)),
+             0.001)) AS geometry             
     FROM simplify_vw_z7
-    WHERE ST_Area(geometry) > power(zres(5),2)
+    WHERE ST_Area(geometry) > power(zres(5),2)AND subclass IN ('wood', 'forest')
+    GROUP BY subclass
+    UNION ALL 
+    SELECT subclass,
+           ST_MakeValid(
+            ST_SnapToGrid(
+             ST_SimplifyVW(geometry, power(zres(9),2)),
+             0.001)) AS geometry
+    FROM simplify_vw_z7
+    WHERE ST_Area(geometry) > power(zres(5),2) AND subclass NOT IN ('wood', 'forest')
+    GROUP BY subclass
 );
 CREATE INDEX ON simplify_vw_z6 USING GIST (geometry);
 

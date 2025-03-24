@@ -309,7 +309,6 @@ CREATE TABLE simplify_vw_z6 AS
              0.001)) AS geometry
     FROM simplify_vw_z7
     WHERE ST_Area(geometry) > power(zres(5),2) AND subclass NOT IN ('wood', 'forest')
-    GROUP BY subclass
 );
 CREATE INDEX ON simplify_vw_z6 USING GIST (geometry);
 

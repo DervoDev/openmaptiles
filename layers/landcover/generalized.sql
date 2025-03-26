@@ -5,13 +5,13 @@ DROP TABLE IF EXISTS osm_landcover_gen_z3;
 DROP TABLE IF EXISTS osm_landcover_gen_z4;
 DROP TABLE IF EXISTS osm_landcover_gen_z5;
 DROP TABLE IF EXISTS osm_landcover_gen_z6;
-DROP TABLE IF EXISTS osm_landcover_gen_z7;
-DROP TABLE IF EXISTS osm_landcover_gen_z8;
-DROP TABLE IF EXISTS osm_landcover_gen_z9;
-DROP TABLE IF EXISTS osm_landcover_gen_z10;
-DROP TABLE IF EXISTS osm_landcover_gen_z11;
-DROP TABLE IF EXISTS osm_landcover_gen_z12;
-DROP TABLE IF EXISTS osm_landcover_gen_z13;
+--DROP TABLE IF EXISTS osm_landcover_gen_z7;
+--DROP TABLE IF EXISTS osm_landcover_gen_z8;
+--DROP TABLE IF EXISTS osm_landcover_gen_z9;
+--DROP TABLE IF EXISTS osm_landcover_gen_z10;
+--DROP TABLE IF EXISTS osm_landcover_gen_z11;
+--DROP TABLE IF EXISTS osm_landcover_gen_z12;
+--DROP TABLE IF EXISTS osm_landcover_gen_z13;
 DROP TABLE IF EXISTS simplify_vw_z0 CASCADE;
 DROP TABLE IF EXISTS simplify_vw_z1 CASCADE;
 DROP TABLE IF EXISTS simplify_vw_z2 CASCADE;
@@ -19,143 +19,143 @@ DROP TABLE IF EXISTS simplify_vw_z3 CASCADE;
 DROP TABLE IF EXISTS simplify_vw_z4 CASCADE;
 DROP TABLE IF EXISTS simplify_vw_z5 CASCADE;
 DROP TABLE IF EXISTS simplify_vw_z6 CASCADE;
-DROP TABLE IF EXISTS simplify_vw_z7 CASCADE;
-DROP TABLE IF EXISTS simplify_vw_z8 CASCADE;
-DROP TABLE IF EXISTS simplify_vw_z9 CASCADE;
-DROP TABLE IF EXISTS simplify_vw_z10 CASCADE;
-DROP TABLE IF EXISTS simplify_vw_z11 CASCADE;
-DROP TABLE IF EXISTS simplify_vw_z12 CASCADE;
-DROP TABLE IF EXISTS simplify_vw_z13 CASCADE;
-
-\echo 'Gen layer 13';
-
--- etldoc: osm_landcover_polygon ->  simplify_vw_z13
-CREATE TABLE simplify_vw_z13 AS
-(
-    SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(geometry, power(zres(13),2)),
-             0.001)) AS geometry
-    FROM osm_landcover_polygon
-    WHERE ST_Area(geometry) > power(zres(12),2)
-);
-CREATE INDEX ON simplify_vw_z13 USING GIST (geometry);
-
--- etldoc: simplify_vw_z13 ->  osm_landcover_gen_z13
-CREATE TABLE osm_landcover_gen_z13 AS
-(
-    SELECT subclass, ST_MakeValid((ST_dump(ST_Union(geometry))).geom) AS geometry
-    FROM (
-        SELECT subclass,
-               ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z13
-        WHERE ST_NPoints(geometry) < 300
-          AND subclass IN ('wood', 'forest')) union_geom300
-    GROUP BY subclass,
-             cid
-    UNION ALL
-    SELECT subclass,
-           geometry
-    FROM simplify_vw_z13
-    WHERE (ST_NPoints(geometry) >= 300 AND subclass IN ('wood', 'forest'))
-       OR (subclass NOT IN ('wood', 'forest'))
-    );
-
-CREATE INDEX ON osm_landcover_gen_z13 USING GIST (geometry);
-
-\echo 'Gen layer 12';
-
--- etldoc: simplify_vw_z13 ->  simplify_vw_z12
-CREATE TABLE simplify_vw_z12 AS
-(
-    SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(geometry, power(zres(12),2)),
-             0.001)) AS geometry
-    FROM simplify_vw_z13
-    WHERE ST_Area(geometry) > power(zres(11),2)
-);
-CREATE INDEX ON simplify_vw_z12 USING GIST (geometry);
-
--- etldoc: simplify_vw_z12 ->  osm_landcover_gen_z12
-CREATE TABLE osm_landcover_gen_z12 AS
-(
-    SELECT subclass, ST_MakeValid((ST_dump(ST_Union(geometry))).geom) AS geometry
-    FROM (
-        SELECT subclass,
-               ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z12
-        WHERE ST_NPoints(geometry) < 300
-          AND subclass IN ('wood', 'forest')) union_geom300
-    GROUP BY subclass,
-             cid
-    UNION ALL
-    SELECT subclass,
-           geometry
-    FROM simplify_vw_z12
-    WHERE (ST_NPoints(geometry) >= 300  AND subclass IN ('wood', 'forest'))
-       OR (subclass NOT IN ('wood', 'forest'))
-    );
-
-CREATE INDEX ON osm_landcover_gen_z12 USING GIST (geometry);
-
-\echo 'Gen layer 11'; 
-
--- etldoc: simplify_vw_z12 ->  simplify_vw_z11
-CREATE TABLE simplify_vw_z11 AS
-(
-    SELECT subclass,
-            ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(geometry, power(zres(11),2)),
-             0.001)) AS geometry
-    FROM simplify_vw_z12
-    WHERE ST_Area(geometry) > power(zres(10),2)
-);
-CREATE INDEX ON simplify_vw_z11 USING GIST (geometry);
-
--- etldoc: simplify_vw_z11 ->  osm_landcover_gen_z11
-CREATE TABLE osm_landcover_gen_z11 AS
-(
-    SELECT subclass, ST_MakeValid((ST_dump(ST_Union(geometry))).geom) AS geometry
-    FROM (
-        SELECT subclass,
-               ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) over () AS cid, geometry
-        FROM simplify_vw_z11
-        WHERE ST_NPoints(geometry) < 300
-          AND subclass IN ('wood', 'forest')) union_geom300
-    GROUP BY subclass,
-             cid
-    UNION ALL
-    SELECT subclass,
-           geometry
-    FROM simplify_vw_z11
-    WHERE (ST_NPoints(geometry) >= 300 AND subclass IN ('wood', 'forest'))
-       OR (subclass NOT IN ('wood', 'forest'))
-    );
-
-CREATE INDEX ON osm_landcover_gen_z11 USING GIST (geometry);
-
-\echo 'Gen layer 10';
-
--- etldoc: simplify_vw_z11 ->  simplify_vw_z10
-CREATE TABLE simplify_vw_z10 AS
-(
-    SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(geometry, power(zres(10),2)),
-             0.001)) AS geometry
-    FROM simplify_vw_z11
-    WHERE ST_Area(geometry) > power(zres(9),2)
-);
-CREATE INDEX ON simplify_vw_z10 USING GIST (geometry);
-
--- etldoc: simplify_vw_z10 ->  osm_landcover_gen_z10
-CREATE TABLE osm_landcover_gen_z10 AS
-(
+--DROP TABLE IF EXISTS simplify_vw_z7 CASCADE;
+--DROP TABLE IF EXISTS simplify_vw_z8 CASCADE;
+--DROP TABLE IF EXISTS simplify_vw_z9 CASCADE;
+--DROP TABLE IF EXISTS simplify_vw_z10 CASCADE;
+--DROP TABLE IF EXISTS simplify_vw_z11 CASCADE;
+--DROP TABLE IF EXISTS simplify_vw_z12 CASCADE;
+--DROP TABLE IF EXISTS simplify_vw_z13 CASCADE;
+--
+--\echo 'Gen layer 13';
+--
+---- etldoc: osm_landcover_polygon ->  simplify_vw_z13
+--CREATE TABLE simplify_vw_z13 AS
+--(
+--    SELECT subclass,
+--           ST_MakeValid(
+--            ST_SnapToGrid(
+--             ST_SimplifyVW(geometry, power(zres(13),2)),
+--             0.001)) AS geometry
+--    FROM osm_landcover_polygon
+--    WHERE ST_Area(geometry) > power(zres(12),2)
+--);
+--CREATE INDEX ON simplify_vw_z13 USING GIST (geometry);
+--
+---- etldoc: simplify_vw_z13 ->  osm_landcover_gen_z13
+--CREATE TABLE osm_landcover_gen_z13 AS
+--(
+--    SELECT subclass, ST_MakeValid((ST_dump(ST_Union(geometry))).geom) AS geometry
+--    FROM (
+--        SELECT subclass,
+--               ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) over () AS cid, geometry
+--        FROM simplify_vw_z13
+--        WHERE ST_NPoints(geometry) < 300
+--          AND subclass IN ('wood', 'forest')) union_geom300
+--    GROUP BY subclass,
+--             cid
+--    UNION ALL
+--    SELECT subclass,
+--           geometry
+--    FROM simplify_vw_z13
+--    WHERE (ST_NPoints(geometry) >= 300 AND subclass IN ('wood', 'forest'))
+--       OR (subclass NOT IN ('wood', 'forest'))
+--    );
+--
+--CREATE INDEX ON osm_landcover_gen_z13 USING GIST (geometry);
+--
+--\echo 'Gen layer 12';
+--
+---- etldoc: simplify_vw_z13 ->  simplify_vw_z12
+--CREATE TABLE simplify_vw_z12 AS
+--(
+--    SELECT subclass,
+--           ST_MakeValid(
+--            ST_SnapToGrid(
+--             ST_SimplifyVW(geometry, power(zres(12),2)),
+--             0.001)) AS geometry
+--    FROM simplify_vw_z13
+--    WHERE ST_Area(geometry) > power(zres(11),2)
+--);
+--CREATE INDEX ON simplify_vw_z12 USING GIST (geometry);
+--
+---- etldoc: simplify_vw_z12 ->  osm_landcover_gen_z12
+--CREATE TABLE osm_landcover_gen_z12 AS
+--(
+--    SELECT subclass, ST_MakeValid((ST_dump(ST_Union(geometry))).geom) AS geometry
+--    FROM (
+--        SELECT subclass,
+--               ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) over () AS cid, geometry
+--        FROM simplify_vw_z12
+--        WHERE ST_NPoints(geometry) < 300
+--          AND subclass IN ('wood', 'forest')) union_geom300
+--    GROUP BY subclass,
+--             cid
+--    UNION ALL
+--    SELECT subclass,
+--           geometry
+--    FROM simplify_vw_z12
+--    WHERE (ST_NPoints(geometry) >= 300  AND subclass IN ('wood', 'forest'))
+--       OR (subclass NOT IN ('wood', 'forest'))
+--    );
+--
+--CREATE INDEX ON osm_landcover_gen_z12 USING GIST (geometry);
+--
+--\echo 'Gen layer 11'; 
+--
+---- etldoc: simplify_vw_z12 ->  simplify_vw_z11
+--CREATE TABLE simplify_vw_z11 AS
+--(
+--    SELECT subclass,
+--            ST_MakeValid(
+--            ST_SnapToGrid(
+--             ST_SimplifyVW(geometry, power(zres(11),2)),
+--             0.001)) AS geometry
+--    FROM simplify_vw_z12
+--    WHERE ST_Area(geometry) > power(zres(10),2)
+--);
+--CREATE INDEX ON simplify_vw_z11 USING GIST (geometry);
+--
+---- etldoc: simplify_vw_z11 ->  osm_landcover_gen_z11
+--CREATE TABLE osm_landcover_gen_z11 AS
+--(
+--    SELECT subclass, ST_MakeValid((ST_dump(ST_Union(geometry))).geom) AS geometry
+--    FROM (
+--        SELECT subclass,
+--               ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) over () AS cid, geometry
+--        FROM simplify_vw_z11
+--        WHERE ST_NPoints(geometry) < 300
+--          AND subclass IN ('wood', 'forest')) union_geom300
+--    GROUP BY subclass,
+--             cid
+--    UNION ALL
+--    SELECT subclass,
+--           geometry
+--    FROM simplify_vw_z11
+--    WHERE (ST_NPoints(geometry) >= 300 AND subclass IN ('wood', 'forest'))
+--       OR (subclass NOT IN ('wood', 'forest'))
+--    );
+--
+--CREATE INDEX ON osm_landcover_gen_z11 USING GIST (geometry);
+--
+--\echo 'Gen layer 10';
+--
+---- etldoc: simplify_vw_z11 ->  simplify_vw_z10
+--CREATE TABLE simplify_vw_z10 AS
+--(
+--    SELECT subclass,
+--           ST_MakeValid(
+--            ST_SnapToGrid(
+--             ST_SimplifyVW(geometry, power(zres(10),2)),
+--             0.001)) AS geometry
+--    FROM simplify_vw_z11
+--    WHERE ST_Area(geometry) > power(zres(9),2)
+--);
+--CREATE INDEX ON simplify_vw_z10 USING GIST (geometry);
+--
+---- etldoc: simplify_vw_z10 ->  osm_landcover_gen_z10
+--CREATE TABLE osm_landcover_gen_z10 AS
+--(
     SELECT subclass, ST_MakeValid((ST_dump(ST_Union(geometry))).geom) AS geometry
     FROM (
         SELECT subclass,
@@ -171,28 +171,28 @@ CREATE TABLE osm_landcover_gen_z10 AS
     FROM simplify_vw_z10
     WHERE (ST_NPoints(geometry) >= 300 AND subclass IN ('wood', 'forest'))
        OR (subclass NOT IN ('wood', 'forest'))
-);
-
-CREATE INDEX ON osm_landcover_gen_z10 USING GIST (geometry);
-
-\echo 'Gen layer 9';
-
--- etldoc: simplify_vw_z10 ->  simplify_vw_z9
-CREATE TABLE simplify_vw_z9 AS
-(
-    SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(geometry, power(zres(9),2)),
-             0.001)) AS geometry
-    FROM simplify_vw_z10
-    WHERE ST_Area(geometry) > power(zres(8),2)
-);
-CREATE INDEX ON simplify_vw_z9 USING GIST (geometry);
-
--- etldoc: simplify_vw_z9 ->  osm_landcover_gen_z9
-CREATE TABLE osm_landcover_gen_z9 AS
-(
+--);
+--
+--CREATE INDEX ON osm_landcover_gen_z10 USING GIST (geometry);
+--
+--\echo 'Gen layer 9';
+--
+---- etldoc: simplify_vw_z10 ->  simplify_vw_z9
+--CREATE TABLE simplify_vw_z9 AS
+--(
+--    SELECT subclass,
+--           ST_MakeValid(
+--            ST_SnapToGrid(
+--             ST_SimplifyVW(geometry, power(zres(9),2)),
+--             0.001)) AS geometry
+--    FROM simplify_vw_z10
+--    WHERE ST_Area(geometry) > power(zres(8),2)
+--);
+--CREATE INDEX ON simplify_vw_z9 USING GIST (geometry);
+--
+---- etldoc: simplify_vw_z9 ->  osm_landcover_gen_z9
+--CREATE TABLE osm_landcover_gen_z9 AS
+--(
     SELECT subclass, ST_MakeValid((ST_dump(ST_Union(geometry))).geom) AS geometry
     FROM (
         SELECT subclass,
@@ -221,25 +221,25 @@ CREATE TABLE osm_landcover_gen_z9 AS
     FROM simplify_vw_z9
     WHERE subclass NOT IN ('wood', 'forest')
     );
-
-CREATE INDEX ON osm_landcover_gen_z9 USING GIST (geometry);
-
-\echo 'Gen layer 8';
-
--- etldoc: simplify_vw_z9 ->  simplify_vw_z8
-CREATE TABLE simplify_vw_z8 AS
-(
-    SELECT subclass,
-           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(8),2)),0.001)) AS geometry
-    FROM simplify_vw_z9
-    WHERE ST_Area(geometry) > power(zres(7),2)
-    );
-CREATE INDEX ON simplify_vw_z8 USING GIST (geometry);
-
--- etldoc: simplify_vw_z8 ->  osm_landcover_gen_z8
-CREATE TABLE osm_landcover_gen_z8 AS
-(
-SELECT subclass, ST_MakeValid((ST_Dump(ST_Union(geometry))).geom) AS geometry
+--
+--CREATE INDEX ON osm_landcover_gen_z9 USING GIST (geometry);
+--
+--\echo 'Gen layer 8';
+--
+---- etldoc: simplify_vw_z9 ->  simplify_vw_z8
+--CREATE TABLE simplify_vw_z8 AS
+--(
+--    SELECT subclass,
+--           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(8),2)),0.001)) AS geometry
+--    FROM simplify_vw_z9
+--    WHERE ST_Area(geometry) > power(zres(7),2)
+--    );
+--CREATE INDEX ON simplify_vw_z8 USING GIST (geometry);
+--
+---- etldoc: simplify_vw_z8 ->  osm_landcover_gen_z8
+--CREATE TABLE osm_landcover_gen_z8 AS
+--(
+--SELECT subclass, ST_MakeValid((ST_Dump(ST_Union(geometry))).geom) AS geometry
     FROM (
         SELECT subclass, ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) OVER () AS cid, geometry
         FROM simplify_vw_z8
@@ -253,25 +253,25 @@ SELECT subclass, ST_MakeValid((ST_Dump(ST_Union(geometry))).geom) AS geometry
     FROM simplify_vw_z8
     WHERE subclass NOT IN ('wood', 'forest')
     );
-
-CREATE INDEX ON osm_landcover_gen_z8 USING GIST (geometry);
-
-\echo 'Gen layer 7';
-
--- etldoc: simplify_vw_z8 ->  simplify_vw_z7
-CREATE TABLE simplify_vw_z7 AS
-(
-    SELECT subclass,
-           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(7),2)),0.001)) AS geometry
-    FROM simplify_vw_z8
-    WHERE ST_Area(geometry) > power(zres(6),2)
-);
-CREATE INDEX ON simplify_vw_z7 USING GIST (geometry);
-
--- etldoc: simplify_vw_z7 ->  osm_landcover_gen_z7
-CREATE TABLE osm_landcover_gen_z7 AS
-(
-SELECT subclass,
+--
+--CREATE INDEX ON osm_landcover_gen_z8 USING GIST (geometry);
+--
+--\echo 'Gen layer 7';
+--
+---- etldoc: simplify_vw_z8 ->  simplify_vw_z7
+--CREATE TABLE simplify_vw_z7 AS
+--(
+--    SELECT subclass,
+--           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(7),2)),0.001)) AS geometry
+--    FROM simplify_vw_z8
+--    WHERE ST_Area(geometry) > power(zres(6),2)
+--);
+--CREATE INDEX ON simplify_vw_z7 USING GIST (geometry);
+--
+---- etldoc: simplify_vw_z7 ->  osm_landcover_gen_z7
+--CREATE TABLE osm_landcover_gen_z7 AS
+--(
+--SELECT subclass,
        ST_MakeValid(
         (ST_Dump(
          ST_Union(geometry))).geom) AS geometry
@@ -285,9 +285,9 @@ SELECT subclass,
     GROUP BY subclass,
          cid
     );
-
-CREATE INDEX ON osm_landcover_gen_z7 USING GIST (geometry);
-
+--
+--CREATE INDEX ON osm_landcover_gen_z7 USING GIST (geometry);
+--
 \echo 'Gen layer 6';
 
 -- etldoc: simplify_vw_z7 ->  simplify_vw_z6
@@ -296,8 +296,7 @@ CREATE TABLE simplify_vw_z6 AS
     SELECT subclass,
            ST_MakeValid(
             ST_SnapToGrid(
-             ST_SimplifyVW(ST_Buffer(ST_Union(ST_Buffer(geometry,100),-100), power(zres(6),2)),
-             0.001)) AS geometry             
+             ST_SimplifyVW(ST_Buffer(ST_Union(ST_Buffer(geometry,100)),-100), power(zres(6),2)), 0.001)) AS geometry             
     FROM simplify_vw_z7
     WHERE ST_Area(geometry) > power(zres(5),2)AND subclass IN ('wood', 'forest')
     GROUP BY subclass

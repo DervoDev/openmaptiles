@@ -296,7 +296,7 @@ CREATE TABLE simplify_vw_z6 AS
     SELECT subclass,
            ST_MakeValid(
             ST_SnapToGrid(
-             ST_SimplifyVW(ST_Union(geometry), power(zres(6),2)),
+             ST_SimplifyVW(ST_Buffer(ST_Union(ST_Buffer(geometry,100),-100), power(zres(6),2)),
              0.001)) AS geometry             
     FROM simplify_vw_z7
     WHERE ST_Area(geometry) > power(zres(5),2)AND subclass IN ('wood', 'forest')

@@ -256,22 +256,35 @@ DROP TABLE IF EXISTS simplify_vw_z6 CASCADE;
 --
 --CREATE INDEX ON osm_landcover_gen_z8 USING GIST (geometry);
 --
---\echo 'Gen layer 7';
---
----- etldoc: simplify_vw_z8 ->  simplify_vw_z7
---CREATE TABLE simplify_vw_z7 AS
---(
---    SELECT subclass,
---           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(7),2)),0.001)) AS geometry
---    FROM simplify_vw_z8
---    WHERE ST_Area(geometry) > power(zres(6),2)
---);
---CREATE INDEX ON simplify_vw_z7 USING GIST (geometry);
---
----- etldoc: simplify_vw_z7 ->  osm_landcover_gen_z7
---CREATE TABLE osm_landcover_gen_z7 AS
---(
---SELECT subclass,
+\echo 'Gen layer 7';
+
+-- etldoc: simplify_vw_z8 ->  simplify_vw_z7
+CREATE TABLE simplify_vw_z7 AS
+(
+    SELECT subclass,
+        ST_MakeValid(
+            ST_SnapToGrid(
+                ST_SimplifyVW(
+                    ST_Buffer(
+                        ST_Union(
+                            ST_Buffer(geometry,100)
+                        ),
+                        -100
+                    ), 
+                    power(zres(7),2)
+                ), 
+                0.001
+            )
+        ) AS geometry
+    FROM simplify_vw_z8
+    WHERE ST_Area(geometry) > power(zres(6),2)
+);
+CREATE INDEX ON simplify_vw_z7 USING GIST (geometry);
+
+-- etldoc: simplify_vw_z7 ->  osm_landcover_gen_z7
+CREATE TABLE osm_landcover_gen_z7 AS
+(
+SELECT subclass,
        ST_MakeValid(
         (ST_Dump(
          ST_Union(geometry))).geom) AS geometry
@@ -285,8 +298,8 @@ DROP TABLE IF EXISTS simplify_vw_z6 CASCADE;
     GROUP BY subclass,
          cid
     );
---
---CREATE INDEX ON osm_landcover_gen_z7 USING GIST (geometry);
+
+CREATE INDEX ON osm_landcover_gen_z7 USING GIST (geometry);
 
 
 \echo 'Gen layer 6';
@@ -295,20 +308,7 @@ DROP TABLE IF EXISTS simplify_vw_z6 CASCADE;
 CREATE TABLE simplify_vw_z6 AS
 (
     SELECT subclass,
-        ST_MakeValid(
-            ST_SnapToGrid(
-                ST_SimplifyVW(
-                    ST_Buffer(
-                        ST_Union(
-                            ST_Buffer(geometry,100)
-                        ),
-                        -100
-                    ), 
-                    power(zres(6),2)
-                ), 
-                0.001
-            )
-        ) AS geometry             
+           ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(6),2)),0.001)) AS geometry   
     FROM simplify_vw_z7
     WHERE ST_Area(geometry) > power(zres(5),2)AND subclass IN ('wood', 'forest')
     GROUP BY subclass

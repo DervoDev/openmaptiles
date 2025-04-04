@@ -285,7 +285,7 @@ CREATE TABLE simplify_vw_z7 AS
             ST_SnapToGrid(
              ST_SimplifyVW(geometry, power(zres(7),2)),
              0.001)) AS geometry
-    FROM simplify_vw_z7
+    FROM simplify_vw_z8
     WHERE ST_Area(geometry) > power(zres(6),2) AND subclass NOT IN ('wood', 'forest')
 );
 CREATE INDEX ON simplify_vw_z7 USING GIST (geometry);

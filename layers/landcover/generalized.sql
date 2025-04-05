@@ -1,10 +1,10 @@
---DROP TABLE IF EXISTS osm_landcover_gen_z0;
---DROP TABLE IF EXISTS osm_landcover_gen_z1;
---DROP TABLE IF EXISTS osm_landcover_gen_z2;
---DROP TABLE IF EXISTS osm_landcover_gen_z3;
---DROP TABLE IF EXISTS osm_landcover_gen_z4;
---DROP TABLE IF EXISTS osm_landcover_gen_z5;
---DROP TABLE IF EXISTS osm_landcover_gen_z6;
+DROP TABLE IF EXISTS osm_landcover_gen_z0;
+DROP TABLE IF EXISTS osm_landcover_gen_z1;
+DROP TABLE IF EXISTS osm_landcover_gen_z2;
+DROP TABLE IF EXISTS osm_landcover_gen_z3;
+DROP TABLE IF EXISTS osm_landcover_gen_z4;
+DROP TABLE IF EXISTS osm_landcover_gen_z5;
+DROP TABLE IF EXISTS osm_landcover_gen_z6;
 --DROP TABLE IF EXISTS osm_landcover_gen_z7;
 --DROP TABLE IF EXISTS osm_landcover_gen_z8;
 --DROP TABLE IF EXISTS osm_landcover_gen_z9;
@@ -12,13 +12,13 @@
 --DROP TABLE IF EXISTS osm_landcover_gen_z11;
 --DROP TABLE IF EXISTS osm_landcover_gen_z12;
 --DROP TABLE IF EXISTS osm_landcover_gen_z13;
---DROP TABLE IF EXISTS simplify_vw_z0 CASCADE;
---DROP TABLE IF EXISTS simplify_vw_z1 CASCADE;
---DROP TABLE IF EXISTS simplify_vw_z2 CASCADE;
---DROP TABLE IF EXISTS simplify_vw_z3 CASCADE;
---DROP TABLE IF EXISTS simplify_vw_z4 CASCADE;
---DROP TABLE IF EXISTS simplify_vw_z5 CASCADE;
---DROP TABLE IF EXISTS simplify_vw_z6 CASCADE;
+DROP TABLE IF EXISTS simplify_vw_z0 CASCADE;
+DROP TABLE IF EXISTS simplify_vw_z1 CASCADE;
+DROP TABLE IF EXISTS simplify_vw_z2 CASCADE;
+DROP TABLE IF EXISTS simplify_vw_z3 CASCADE;
+DROP TABLE IF EXISTS simplify_vw_z4 CASCADE;
+DROP TABLE IF EXISTS simplify_vw_z5 CASCADE;
+DROP TABLE IF EXISTS simplify_vw_z6 CASCADE;
 --DROP TABLE IF EXISTS simplify_vw_z7 CASCADE;
 --DROP TABLE IF EXISTS simplify_vw_z8 CASCADE;
 --DROP TABLE IF EXISTS simplify_vw_z9 CASCADE;
@@ -319,7 +319,7 @@ CREATE TABLE simplify_vw_z6 AS
     SELECT subclass,
            ST_MakeValid(ST_SnapToGrid(ST_SimplifyVW(geometry, power(zres(6),2)),0.001)) AS geometry   
     FROM simplify_vw_z7
-    WHERE ST_Area(geometry) > power(zres(5),2)AND subclass IN ('wood', 'forest')
+    WHERE ST_Area(geometry) > power(zres(5),2)
 );
 CREATE INDEX ON simplify_vw_z6 USING GIST (geometry);
 

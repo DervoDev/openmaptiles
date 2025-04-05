@@ -256,59 +256,59 @@ DROP TABLE IF EXISTS simplify_vw_z6 CASCADE;
 --
 --CREATE INDEX ON osm_landcover_gen_z8 USING GIST (geometry);
 
-\echo 'Gen layer 7';
-
--- etldoc: simplify_vw_z8 ->  simplify_vw_z7
-CREATE TABLE simplify_vw_z7 AS
-(
-    SELECT subclass,
-        ST_MakeValid(
-            ST_SnapToGrid(
-                ST_SimplifyVW(
-                    ST_Buffer(
-                        ST_Union(
-                            ST_Buffer(geometry,100)
-                        ),
-                        -100
-                    ), 
-                    power(zres(7),2)
-                ), 
-                0.001
-            )
-        ) AS geometry
-    FROM simplify_vw_z8
-    WHERE ST_Area(geometry) > power(zres(6),2)AND subclass IN ('wood', 'forest')
-    GROUP BY subclass
-    UNION ALL 
-    SELECT subclass,
-           ST_MakeValid(
-            ST_SnapToGrid(
-             ST_SimplifyVW(geometry, power(zres(7),2)),
-             0.001)) AS geometry
-    FROM simplify_vw_z8
-    WHERE ST_Area(geometry) > power(zres(6),2) AND subclass NOT IN ('wood', 'forest')
-);
-CREATE INDEX ON simplify_vw_z7 USING GIST (geometry);
-
--- etldoc: simplify_vw_z7 ->  osm_landcover_gen_z7
-CREATE TABLE osm_landcover_gen_z7 AS
-(
-SELECT subclass,
-       ST_MakeValid(
-        (ST_Dump(
-         ST_Union(geometry))).geom) AS geometry
-    FROM
-        (
-        SELECT  subclass,
-                ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) OVER () AS cid,
-                geometry
-        FROM simplify_vw_z7
-        ) union_geom
-    GROUP BY subclass,
-         cid
-    );
-
-CREATE INDEX ON osm_landcover_gen_z7 USING GIST (geometry);
+--\echo 'Gen layer 7';
+--
+---- etldoc: simplify_vw_z8 ->  simplify_vw_z7
+--CREATE TABLE simplify_vw_z7 AS
+--(
+--    SELECT subclass,
+--        ST_MakeValid(
+--            ST_SnapToGrid(
+--                ST_SimplifyVW(
+--                    ST_Buffer(
+--                        ST_Union(
+--                            ST_Buffer(geometry,100)
+--                        ),
+--                        -100
+--                    ), 
+--                    power(zres(7),2)
+--                ), 
+--                0.001
+--            )
+--        ) AS geometry
+--    FROM simplify_vw_z8
+--    WHERE ST_Area(geometry) > power(zres(6),2)AND subclass IN ('wood', 'forest')
+--    GROUP BY subclass
+--    UNION ALL 
+--    SELECT subclass,
+--           ST_MakeValid(
+--            ST_SnapToGrid(
+--             ST_SimplifyVW(geometry, power(zres(7),2)),
+--             0.001)) AS geometry
+--    FROM simplify_vw_z8
+--    WHERE ST_Area(geometry) > power(zres(6),2) AND subclass NOT IN ('wood', 'forest')
+--);
+--CREATE INDEX ON simplify_vw_z7 USING GIST (geometry);
+--
+---- etldoc: simplify_vw_z7 ->  osm_landcover_gen_z7
+--CREATE TABLE osm_landcover_gen_z7 AS
+--(
+--SELECT subclass,
+--       ST_MakeValid(
+--        (ST_Dump(
+--         ST_Union(geometry))).geom) AS geometry
+--    FROM
+--        (
+--        SELECT  subclass,
+--                ST_ClusterDBSCAN(geometry, eps := 0, minpoints := 1) OVER () AS cid,
+--                geometry
+--        FROM simplify_vw_z7
+--        ) union_geom
+--    GROUP BY subclass,
+--         cid
+--    );
+--
+--CREATE INDEX ON osm_landcover_gen_z7 USING GIST (geometry);
 
 
 \echo 'Gen layer 6';

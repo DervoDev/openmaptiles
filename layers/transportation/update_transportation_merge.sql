@@ -826,11 +826,7 @@ BEGIN
                   transportation.changes_z4_z5_z6_z7.id = osm_transportation_merge_linestring_gen_z6.id
         )) AND
         -- Current view: all motorways and trunks of national-importance
-        (highway = 'motorway'
-            OR construction = 'motorway'
-            -- Allow trunk roads that are part of a nation's most important route network to show at z5
-            OR (highway = 'trunk' AND osm_national_network(network))
-        ) AND
+        (highway IN ('motorway', 'trunk') OR construction IN ('motorway', 'trunk')) AND
         ST_Length(geometry) > 500
     ON CONFLICT (id) DO UPDATE SET osm_id = excluded.osm_id, highway = excluded.highway, network = excluded.network,
                                    construction = excluded.construction, is_bridge = excluded.is_bridge,

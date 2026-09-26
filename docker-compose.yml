@@ -85,8 +85,8 @@ services:
       - ./data:/export
       - ./build/sql:/sql
       - ./build:/mapping
-      - ./cache:/cache
       - ./style:/style
+      - /mnt/imposm_cache:/cache
 
   update-osm:
     <<: *openmaptiles-tools

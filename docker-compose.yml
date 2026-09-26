@@ -14,7 +14,7 @@ services:
     #command: postgres -c "config_file=./etc/postgresql/postgresql.conf"
     command: >
       postgres 
-      -c "shared_buffers=8GB" 
+      -c "shared_buffers=32GB" 
       -c "autovacuum=on" 
       -c "work_mem=128MB" 
       -c "maintenance_work_mem=2GB" 
